@@ -58,3 +58,5 @@ The `src/main.cpp` is basically a combination of the `ESP32-S3-Touch-LCD-4.3_Cod
 There are some yellow artifacts when doing animations. Also, I have not yet figured out how to rotate the screen.
 
 Feedback welcome!
+# CANBusMessagesDisplay
+Displaying Can Bus Messages on the Display of a Waveshare ESP32-S3 Touch LCD 4,3" Microcontroller
