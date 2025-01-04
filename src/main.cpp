@@ -181,6 +181,26 @@ void receive_can_message() {
         // Aktualisiere den Index für die nächste Nachricht
         current_message_index = (current_message_index + 1) % MAX_CAN_MESSAGES;
 
+        // Statistik aktualisieren
+        bool found = false;
+        for (int i = 0; i < MAX_STATS; i++) {
+            if (messageStats[i].id == message.identifier) {
+                messageStats[i].count++;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            // Neue Nachricht hinzufügen
+            for (int i = 0; i < MAX_STATS; i++) {
+                if (messageStats[i].count == 0) {
+                    messageStats[i].id = message.identifier;
+                    messageStats[i].count = 1;
+                    break;
+                }
+            }
+        }
+
         // Aktualisiere die TextArea mit allen Nachrichten
         char combined_log[MAX_CAN_MESSAGES * MESSAGE_BUFFER_SIZE] = "";
         for (size_t i = 0; i < MAX_CAN_MESSAGES; i++) {
@@ -203,7 +223,7 @@ void receive_can_message() {
 void update_can_log_task() {
     lv_timer_create([](lv_timer_t *timer) {
         receive_can_message();  // Nachrichten empfangen und UI aktualisieren
-    }, 10000, NULL);  // Aktualisierung alle 5 Sekunden
+    }, 5000, NULL);  // Aktualisierung alle 5 Sekunden
 }
 
 void update_can_statistics(uint32_t can_id) {
@@ -243,19 +263,35 @@ void find_top_10_messages(CanMessageStat top_10[10]) {
         }
     }
 
+    // Leeren, um sicherzustellen, dass keine ungültigen Daten übernommen werden
+    memset(top_10, 0, sizeof(CanMessageStat) * 10); 
     // Die Top 10 extrahieren
     for (int i = 0; i < 10; i++) {
         top_10[i] = temp[i];
     }
 }
 
-void update_y_axis_labels(const char * labels[10]) {
-    lv_obj_t * label;
+void update_x_axis_labels(lv_obj_t *chart, uint32_t IDs[10]) {
+    static lv_obj_t *x_labels[10] = {NULL}; // Speicher für die Labels (persistent)
+
+    // Berechne die Höhe des Diagramms und den Abstand zwischen den Labels
+    lv_coord_t label_spacing = 20; // Fester Abstand zwischen den Labels
+
     for (int i = 0; i < 10; i++) {
-        label = lv_obj_get_child(ui_TopScreen, i); // Hol das entsprechende Label
-        if (label != NULL) {
-            lv_label_set_text(label, labels[i]); // Setze den Text des Labels
+        if (x_labels[i] == NULL) {
+            // Erstmalige Erstellung der Labels
+            x_labels[i] = lv_label_create(lv_obj_get_parent(chart));
+            lv_obj_set_width(x_labels[i], LV_SIZE_CONTENT);
+            lv_obj_set_height(x_labels[i], LV_SIZE_CONTENT);
+
+            // Positioniere das Label links vom Diagramm
+            lv_obj_align_to(x_labels[i], chart, LV_ALIGN_OUT_RIGHT_TOP, 40, i * label_spacing);
         }
+
+        // Aktualisiere den Text des Labels
+        char label_text[16];
+        snprintf(label_text, sizeof(label_text), "%d: 0x%X",i+1 ,IDs[i]);
+        lv_label_set_text(x_labels[i], label_text);
     }
 }
 
@@ -264,19 +300,19 @@ void update_diagram(void) {
     // Hole die Top 10 Nachrichten
     CanMessageStat top_10[10];
     find_top_10_messages(top_10);
-    
-    const char * labels[10];
+    uint32_t IDs[10];
     
     for (int i = 0; i < 10; i++) {
         if (top_10[i].count > 0) {
             lv_chart_set_value_by_id(ui_Chart1, ui_chart_series_1, i,top_10[i].count);
+            IDs[i] = top_10[i].id;
             Serial.printf("ID: 0x%X -> Count: %d\n", top_10[i].id, top_10[i].count);
-        }// else {
-        //    lv_chart_set_next_value(ui_Chart1, ui_chart_series_1, 0);
-        //}
+        }
     }
     
-    //update_y_axis_labels(labels);
+    update_x_axis_labels(ui_Chart1, IDs);
+    lv_chart_refresh(ui_Chart1);
+
 }
 
 
@@ -323,6 +359,26 @@ void simulate_can_message() {
 
     // Aktualisiere den Index für die nächste Nachricht
     current_message_index = (current_message_index + 1) % MAX_CAN_MESSAGES;
+
+    // Aktualisiere die Statistik
+    bool found = false;
+    for (int i = 0; i < MAX_STATS; i++) {
+        if (messageStats[i].id == fake_id) {
+            messageStats[i].count++; // Zähler erhöhen, wenn ID gefunden
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        // Neue Nachricht zur Statistik hinzufügen
+        for (int i = 0; i < MAX_STATS; i++) {
+            if (messageStats[i].count == 0) { // Freien Platz finden
+                messageStats[i].id = fake_id;
+                messageStats[i].count = 1;
+                break;
+            }
+        }
+    }
 
     // Kombiniere alle Nachrichten aus dem Ringpuffer für die TextArea
     char combined_log[MAX_CAN_MESSAGES * MESSAGE_BUFFER_SIZE] = "";
