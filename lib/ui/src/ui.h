@@ -60,7 +60,7 @@ extern lv_obj_t * ui_Label4;
 extern lv_obj_t * ui_Label5;
 void ui_event_Chart1(lv_event_t * e);
 extern lv_obj_t * ui_Chart1;
-extern lv_chart_series_t * ui_chart_series; // Datenreihe des Diagramms
+extern lv_chart_series_t * ui_chart_series_1; // Datenreihe des Diagramms
 
 // CUSTOM VARIABLES
 

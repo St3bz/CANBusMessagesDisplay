@@ -5,7 +5,7 @@
 
 #include "../ui.h"
 
-lv_chart_series_t * ui_chart_series = NULL; // Definition der globalen Variable
+lv_chart_series_t * ui_chart_series_1; // Definition der globalen Variable
 
 
 void ui_TopScreen_screen_init(void)
@@ -45,22 +45,15 @@ void ui_TopScreen_screen_init(void)
     lv_obj_set_y(ui_Chart1, -37);
     lv_obj_set_align(ui_Chart1, LV_ALIGN_CENTER);
     lv_chart_set_type(ui_Chart1, LV_CHART_TYPE_BAR);
-    lv_chart_set_axis_tick(ui_Chart1, LV_CHART_AXIS_PRIMARY_X, 10, 5, 5, 1, true, 50);
-    lv_chart_set_range(ui_Chart1, LV_CHART_AXIS_PRIMARY_X, 0, 100); // X-Achse: Häufigkeit
+    lv_chart_set_range(ui_Chart1, LV_CHART_AXIS_PRIMARY_X, 1, 11); // X-Achse: 1 bis 10 (Nachrichten-ID-Positionen)
+    lv_chart_set_range(ui_Chart1, LV_CHART_AXIS_PRIMARY_Y, 0, 30); // Y-Achse: 0 bis Max-Frequenz
+    lv_chart_set_axis_tick(ui_Chart1, LV_CHART_AXIS_PRIMARY_X, 10, 5, 10, 2, true, 50); // 10 Ticks auf der X-Achse
+    lv_chart_set_axis_tick(ui_Chart1, LV_CHART_AXIS_PRIMARY_Y, 10, 5, 5, 1, true, 50); // 10 Ticks auf der Y-Achse
+
 
     // Datenreihe hinzufügen
-    ui_chart_series = lv_chart_add_series(ui_Chart1, lv_color_hex(0x808080), LV_CHART_AXIS_PRIMARY_X);
-
-    // Y-Achsen-Labels erstellen
-    for (int i = 0; i < 10; i++) {
-        lv_obj_t * label = lv_label_create(ui_TopScreen);
-        lv_obj_set_width(label, LV_SIZE_CONTENT);
-        lv_obj_set_height(label, LV_SIZE_CONTENT);
-        lv_obj_align_to(label, ui_Chart1, LV_ALIGN_OUT_LEFT_TOP, -10, 20 + i * 20); // Position links vom Diagramm
-        lv_label_set_text_fmt(label, "CAN %d", i + 1); // Temporäre Labels, später dynamisch aktualisieren
-    }
-
-
+    ui_chart_series_1 = lv_chart_add_series(ui_Chart1, lv_color_hex(0x808080), LV_CHART_AXIS_PRIMARY_X);
+    lv_chart_set_update_mode(ui_Chart1, LV_CHART_UPDATE_MODE_SHIFT); // Verschiebungsmodus
 
     lv_obj_add_event_cb(ui_Button3, ui_event_Button3, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_Chart1, ui_event_Chart1, LV_EVENT_ALL, NULL);

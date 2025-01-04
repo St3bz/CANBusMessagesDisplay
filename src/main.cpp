@@ -264,22 +264,19 @@ void update_diagram(void) {
     // Hole die Top 10 Nachrichten
     CanMessageStat top_10[10];
     find_top_10_messages(top_10);
-
-    // Aktualisiere die Diagramm-Daten
-    lv_chart_remove_series(ui_Chart1, ui_chart_series);  // Lösche alte Daten
+    
     const char * labels[10];
+    
     for (int i = 0; i < 10; i++) {
         if (top_10[i].count > 0) {
-            lv_chart_set_next_value(ui_Chart1, ui_chart_series, top_10[i].count);
-            static char label[32];
-            snprintf(label, sizeof(label), "ID: 0x%X", top_10[i].id);
-            labels[i] = label;
-        } else {
-            labels[i] = "";
-        }
+            lv_chart_set_value_by_id(ui_Chart1, ui_chart_series_1, i,top_10[i].count);
+            Serial.printf("ID: 0x%X -> Count: %d\n", top_10[i].id, top_10[i].count);
+        }// else {
+        //    lv_chart_set_next_value(ui_Chart1, ui_chart_series_1, 0);
+        //}
     }
-
-    update_y_axis_labels(labels);
+    
+    //update_y_axis_labels(labels);
 }
 
 
@@ -444,6 +441,8 @@ void setup()
     /* Start CAN-Bus Nachrichtenempfang */
     update_can_log_task();
 
+    update_diagram();
+
     /* Release the mutex */
     lvgl_port_unlock();
 
@@ -457,7 +456,14 @@ void loop()
 {
     // Serial.println("Loop");
     //sleep(1);
-    
+    if (ui_chart_series_1 == NULL) {
+        Serial.printf("Error: Chart series not initialized.\n");
+    return;
+    }
+    if (ui_Chart1 == NULL) {
+        Serial.printf("Error: Chart object not initialized.\n");
+        return;
+    } 
     // Füge eine kurze Verzögerung ein, um den Watchdog zurückzusetzen, aber vermeide sleep()
     vTaskDelay(pdMS_TO_TICKS(1));
 
