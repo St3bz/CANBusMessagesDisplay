@@ -232,27 +232,6 @@ void update_can_log_task() {
     }, 5000, NULL);  // Aktualisierung alle 5 Sekunden
 }
 
-void update_can_statistics(uint32_t can_id) {
-    for (int i = 0; i < MAX_STATS; i++) {
-        if (messageStats[i].id == can_id) {
-            messageStats[i].count++;  // Wenn die ID bereits existiert, erhöhe den Zähler
-            return;
-        } else if (messageStats[i].id == 0) {
-            messageStats[i].id = can_id;  // Neue Nachricht, füge ID und Count hinzu
-            messageStats[i].count = 1;
-            return;
-        }
-    }
-}
-
-void receive_can_message_stat() {
-    twai_message_t message;
-    if (twai_receive(&message, pdMS_TO_TICKS(1000)) == ESP_OK) {
-        // Statistiken aktualisieren
-        update_can_statistics(message.identifier);
-    }
-}
-
 void find_top_10_messages(CanMessageStat top_10[10]) {
     // Temporäres Array kopieren
     CanMessageStat temp[MAX_STATS];
@@ -280,7 +259,6 @@ void find_top_10_messages(CanMessageStat top_10[10]) {
 void update_x_axis_labels(lv_obj_t *chart, uint32_t IDs[10]) {
     static lv_obj_t *x_labels[10] = {NULL}; // Speicher für die Labels (persistent)
 
-    // Berechne die Höhe des Diagramms und den Abstand zwischen den Labels
     lv_coord_t label_spacing = 20; // Fester Abstand zwischen den Labels
 
     for (int i = 0; i < 10; i++) {
@@ -290,17 +268,16 @@ void update_x_axis_labels(lv_obj_t *chart, uint32_t IDs[10]) {
             lv_obj_set_width(x_labels[i], LV_SIZE_CONTENT);
             lv_obj_set_height(x_labels[i], LV_SIZE_CONTENT);
 
-            // Positioniere das Label links vom Diagramm
+            // Positioniere das Label rechts vom Diagramm
             lv_obj_align_to(x_labels[i], chart, LV_ALIGN_OUT_RIGHT_TOP, 40, i * label_spacing);
         }
 
         // Aktualisiere den Text des Labels
-        char label_text[16];
+        char label_text[16] = "";
         snprintf(label_text, sizeof(label_text), "%d: 0x%X",i+1 ,IDs[i]);
         lv_label_set_text(x_labels[i], label_text);
     }
 }
-
 
 void update_diagram(void) {
     // Hole die Top 10 Nachrichten
@@ -319,6 +296,12 @@ void update_diagram(void) {
     update_x_axis_labels(ui_Chart1, IDs);
     lv_chart_refresh(ui_Chart1);
 
+}
+
+void start_diagram_update_task() {
+    lv_timer_create([](lv_timer_t * timer) {
+        update_diagram(); // Diagramm-Update aufrufen
+    }, 5000, NULL); // Aktualisiere alle 5000 ms (5 Sekunden)
 }
 
 // Logik für ID-Buttons
@@ -410,54 +393,6 @@ void send_start_handler() {
     }
 }
 
-
-void update_textarea() {
-    char combined_log[MAX_CAN_MESSAGES * MESSAGE_BUFFER_SIZE] = "";
-    for (size_t i = 0; i < MAX_CAN_MESSAGES; i++) {
-        size_t index = (current_message_index + i) % MAX_CAN_MESSAGES;
-        if (message_log[index][0] != '\0') {
-            strcat(combined_log, message_log[index]);
-        }
-    }
-    lv_textarea_set_text(ui_TextArea2, combined_log);
-}
-
-void start_textarea_update_task() {
-    lv_timer_create([](lv_timer_t * timer) {
-        update_textarea();
-    }, 5000, NULL);
-}
-
-
-// Funktion zur Aktualisierung des Balkendiagramms
-void update_chart_with_statistics() {
-    // Leere das Diagramm
-    lv_chart_remove_series(ui_Chart1, NULL);
-    
-    // Erstelle eine neue Serie im Diagramm
-    lv_chart_series_t * ser = lv_chart_add_series(ui_Chart1, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
-    
-    // Füge die Häufigkeiten der Nachrichten zum Diagramm hinzu
-    for (int i = 0; i < MAX_STATS; i++) {
-        if (messageStats[i].id != 0) {
-            lv_chart_set_next_value(ui_Chart1, ser, messageStats[i].count);
-        } else {
-            break;  // Ende der Statistik-Daten erreicht
-        }
-    }
-    
-    // Aktualisiere das Diagramm
-    lv_chart_refresh(ui_Chart1);
-
-    esp_task_wdt_reset();
-}
-
-void start_chart_update_task() {
-    lv_timer_create([](lv_timer_t * timer) {
-        update_chart_with_statistics();  // Diagramm alle 10 Sekunden aktualisieren
-    }, 15000, NULL);  // 10000 ms = 10 Sekunden
-}
-
 void simulate_can_message() {
     // Simuliere eine zufällige CAN-ID
     uint32_t fake_id = rand() % 0x7FF;  // Zufällige ID im Bereich 0x000 bis 0x7FF
@@ -505,6 +440,7 @@ void simulate_can_message() {
     // Aktualisiere die TextArea nur mit der neuesten Nachricht
     lv_textarea_set_text(ui_TextArea1, combined_log);
     lv_textarea_set_text(ui_TextArea2, combined_log);
+    
 }
 
 // Simuliere alle paar Sekunden eine Nachricht
@@ -606,18 +542,17 @@ void setup()
     /* Lock the mutex due to the LVGL APIs are not thread-safe */
     lvgl_port_lock(-1);
 
+    /* Start Simulation CAN-Bus Nachrichtenempfang */
     start_can_simulation_task();
     
     /* Start CAN-Bus Nachrichtenempfang */
     update_can_log_task();
 
-    update_diagram();
+    /* Start CAN-Bus Nachrichtenstatistik */
+    start_diagram_update_task();
 
     /* Release the mutex */
     lvgl_port_unlock();
-
-    /* Start Diagramm-Aktualisierung */
-    //start_chart_update_task();
 
     Serial.println("Setup done");
 }
@@ -626,19 +561,8 @@ void loop()
 {
     // Serial.println("Loop");
     //sleep(1);
-    if (ui_chart_series_1 == NULL) {
-        Serial.printf("Error: Chart series not initialized.\n");
-    return;
-    }
-    if (ui_Chart1 == NULL) {
-        Serial.printf("Error: Chart object not initialized.\n");
-        return;
-    } 
-    // Füge eine kurze Verzögerung ein, um den Watchdog zurückzusetzen, aber vermeide sleep()
-    vTaskDelay(pdMS_TO_TICKS(1));
 
     // Reset des Task-Watchdog in der loop() Funktion
     esp_task_wdt_reset();
-
 
 }

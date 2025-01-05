@@ -31,7 +31,7 @@ void ui_LoadScreen_screen_init(void)
     lv_obj_set_width(ui_Label7, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label7, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_Label7, -1);
-    lv_obj_set_y(ui_Label7, -211);
+    lv_obj_set_y(ui_Label7, -190);
     lv_obj_set_align(ui_Label7, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label7, "Send CAN Message");
 
