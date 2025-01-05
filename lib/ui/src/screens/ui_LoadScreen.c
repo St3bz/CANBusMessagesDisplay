@@ -138,43 +138,38 @@ void ui_LoadScreen_screen_init(void)
     lv_obj_set_y(ui_Label16, 1);
     lv_obj_set_align(ui_Label16, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label16, "Send");
-
-    /*
-    ui_Label17 = lv_obj_create(ui_LoadScreen);
-    lv_obj_set_width(ui_Label17, 260);
-    lv_obj_set_height(ui_Label17, 40);
-    lv_obj_set_x(ui_Label17, -110);
-    lv_obj_set_y(ui_Label17, -140);
-    lv_obj_set_align(ui_Label17, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label17, "0x001");
-
-    ui_Label18 = lv_obj_create(ui_LoadScreen);
-    lv_obj_set_width(ui_Label18, 260);
-    lv_obj_set_height(ui_Label18, 40);
-    lv_obj_set_x(ui_Label18, -110);
-    lv_obj_set_y(ui_Label18, -80);
-    lv_obj_set_align(ui_Label18, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label18, "1000 ms");
-    */
-   /*
    
-   */
     ui_Panel3 = lv_obj_create(ui_LoadScreen);
-    lv_obj_set_width(ui_Panel3, 251);
-    lv_obj_set_height(ui_Panel3, 34);
+    lv_obj_set_width(ui_Panel3, 250);
+    lv_obj_set_height(ui_Panel3, 35);
     lv_obj_set_x(ui_Panel3, -110);
-    lv_obj_set_y(ui_Panel3, -138);
+    lv_obj_set_y(ui_Panel3, -140);
     lv_obj_set_align(ui_Panel3, LV_ALIGN_CENTER);
     lv_obj_clear_flag(ui_Panel3, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
+    ui_Label17 = lv_label_create(ui_Panel3);
+    lv_obj_set_width(ui_Label17, LV_SIZE_CONTENT);
+    lv_obj_set_height(ui_Label17, LV_SIZE_CONTENT);
+    lv_obj_set_x(ui_Label17, 0);
+    lv_obj_set_y(ui_Label17, 1);
+    lv_obj_set_align(ui_Label17, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label17, "0x001");
+
     ui_Panel4 = lv_obj_create(ui_LoadScreen);
-    lv_obj_set_width(ui_Panel4, 244);
-    lv_obj_set_height(ui_Panel4, 32);
-    lv_obj_set_x(ui_Panel4, -114);
-    lv_obj_set_y(ui_Panel4, -76);
+    lv_obj_set_width(ui_Panel4, 250);
+    lv_obj_set_height(ui_Panel4, 35);
+    lv_obj_set_x(ui_Panel4, -110);
+    lv_obj_set_y(ui_Panel4, -80);
     lv_obj_set_align(ui_Panel4, LV_ALIGN_CENTER);
     lv_obj_clear_flag(ui_Panel4, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
+    ui_Label18 = lv_label_create(ui_Panel4);
+    lv_obj_set_width(ui_Label18, LV_SIZE_CONTENT);
+    lv_obj_set_height(ui_Label18, LV_SIZE_CONTENT);
+    lv_obj_set_x(ui_Label18, 0);
+    lv_obj_set_y(ui_Label18, 1);
+    lv_obj_set_align(ui_Label18, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label18, "1000 ms");
 
     lv_obj_add_event_cb(ui_Button4, ui_event_Button4, LV_EVENT_ALL, NULL);
 

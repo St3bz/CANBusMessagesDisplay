@@ -73,10 +73,10 @@ lv_obj_t * ui_Label15;
 void ui_event_Button11(lv_event_t * e);
 lv_obj_t * ui_Button11;
 lv_obj_t * ui_Label16;
-//lv_obj_t * ui_Label17;
-//lv_obj_t * ui_Label18;
 lv_obj_t * ui_Panel3;
+lv_obj_t * ui_Label17;
 lv_obj_t * ui_Panel4;
+lv_obj_t * ui_Label18;
 // CUSTOM VARIABLES
 
 // EVENTS
@@ -173,7 +173,7 @@ void ui_event_Button7(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_CLICKED) {
-        //id_up_handler();
+        id_up_handler();
     }
 }
 void ui_event_Button9(lv_event_t * e)
@@ -181,7 +181,7 @@ void ui_event_Button9(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_CLICKED) {
-        //id_down_handler();
+        id_down_handler();
     }
 }
 void ui_event_Button8(lv_event_t * e)
@@ -189,7 +189,7 @@ void ui_event_Button8(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_CLICKED) {
-       //interval_up_handler();
+       interval_up_handler();
     }
 }
 void ui_event_Button10(lv_event_t * e)
@@ -197,7 +197,7 @@ void ui_event_Button10(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_CLICKED) {
-       //interval_down_handler();
+       interval_down_handler();
     }
 }
 void ui_event_Button11(lv_event_t * e)
@@ -205,7 +205,7 @@ void ui_event_Button11(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_CLICKED) {
-        //send_start_handler();
+        send_start_handler();
     }
 }
 ///////////////////// SCREENS ////////////////////

@@ -89,10 +89,10 @@ extern lv_obj_t * ui_Label15;
 void ui_event_Button11(lv_event_t * e);
 extern lv_obj_t * ui_Button11;
 extern lv_obj_t * ui_Label16;
-//extern lv_obj_t * ui_Label17;
-//extern lv_obj_t * ui_Label18;
 extern lv_obj_t * ui_Panel3;
+extern lv_obj_t * ui_Label17;
 extern lv_obj_t * ui_Panel4;
+extern lv_obj_t * ui_Label18;
 // CUSTOM VARIABLES
 void id_up_handler();
 void id_down_handler();

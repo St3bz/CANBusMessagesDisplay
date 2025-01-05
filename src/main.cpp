@@ -163,6 +163,7 @@ size_t current_message_index = 0;
 bool sending = false;
 uint32_t can_message_id = 0x001;
 uint32_t send_interval_ms = 1000;
+lv_timer_t *send_timer = NULL;
 
 // Funktion zum Empfangen der CAN-Nachrichten
 void receive_can_message() {
@@ -216,6 +217,7 @@ void receive_can_message() {
 
         // TextArea aktualisieren
         lv_textarea_set_text(ui_TextArea1, combined_log);
+        lv_textarea_set_text(ui_TextArea2, combined_log);
     }
 
     // Watchdog zurücksetzen
@@ -318,7 +320,7 @@ void update_diagram(void) {
     lv_chart_refresh(ui_Chart1);
 
 }
-/*
+
 // Logik für ID-Buttons
 void id_up_handler() {
     if (can_message_id < 0x7FF) {
@@ -354,6 +356,9 @@ void interval_up_handler() {
             snprintf(buffer, sizeof(buffer), "   %d ms", send_interval_ms);
             lv_label_set_text(ui_Label18, buffer);
         }
+        if (sending && send_timer) {
+            lv_timer_set_period(send_timer, send_interval_ms);
+        }
     }
 }
 
@@ -366,19 +371,63 @@ void interval_down_handler() {
         snprintf(buffer, sizeof(buffer), "   %d ms", send_interval_ms);
         lv_label_set_text(ui_Label18, buffer);
         }
+        if (sending && send_timer) {
+            lv_timer_set_period(send_timer, send_interval_ms);
+        }
     }
 }
 
 // Logik für Start/Stop-Button
-void send_start_handler() {
-    sending = !sending;
-    if (sending) {
-        Serial.println("Sending started.");
+void send_configured_can_message() {
+    twai_message_t message;
+    message.identifier = can_message_id; // Eingestellte ID
+    message.data_length_code = 8;       // Standardlänge
+    memset(message.data, 0, sizeof(message.data)); // Fülle Daten mit 0
+
+    if (twai_transmit(&message, pdMS_TO_TICKS(1000)) == ESP_OK) {
+        Serial.printf("Sent CAN Message: ID 0x%X\n", message.identifier);
     } else {
-        Serial.println("Sending stopped.");
+        Serial.println("Failed to send CAN message.");
     }
 }
-*/
+
+void send_start_handler() {
+    if (sending) {
+        // Senden stoppen
+        if (send_timer) {
+            lv_timer_del(send_timer); // Timer löschen
+            send_timer = NULL;
+        }
+        sending = false;
+        Serial.println("Sending stopped.");
+    } else {
+        // Senden starten
+        send_timer = lv_timer_create([](lv_timer_t * timer) {
+            send_configured_can_message(); // Nachricht senden
+        }, send_interval_ms, NULL); // Intervall für den Timer
+        sending = true;
+        Serial.printf("Sending started with interval %d ms.\n", send_interval_ms);
+    }
+}
+
+
+void update_textarea() {
+    char combined_log[MAX_CAN_MESSAGES * MESSAGE_BUFFER_SIZE] = "";
+    for (size_t i = 0; i < MAX_CAN_MESSAGES; i++) {
+        size_t index = (current_message_index + i) % MAX_CAN_MESSAGES;
+        if (message_log[index][0] != '\0') {
+            strcat(combined_log, message_log[index]);
+        }
+    }
+    lv_textarea_set_text(ui_TextArea2, combined_log);
+}
+
+void start_textarea_update_task() {
+    lv_timer_create([](lv_timer_t * timer) {
+        update_textarea();
+    }, 5000, NULL);
+}
+
 
 // Funktion zur Aktualisierung des Balkendiagramms
 void update_chart_with_statistics() {
@@ -455,6 +504,7 @@ void simulate_can_message() {
 
     // Aktualisiere die TextArea nur mit der neuesten Nachricht
     lv_textarea_set_text(ui_TextArea1, combined_log);
+    lv_textarea_set_text(ui_TextArea2, combined_log);
 }
 
 // Simuliere alle paar Sekunden eine Nachricht
