@@ -36,19 +36,17 @@ void ui_LoadScreen_screen_init(void)
     lv_label_set_text(ui_Label7, "Send CAN Message");
 
     ui_TextArea2 = lv_textarea_create(ui_LoadScreen);
-    lv_obj_set_width(ui_TextArea2, 511);
-    lv_obj_set_height(ui_TextArea2, 123);
-    lv_obj_set_x(ui_TextArea2, -99);
-    lv_obj_set_y(ui_TextArea2, 33);
+    lv_obj_set_width(ui_TextArea2, 510);
+    lv_obj_set_height(ui_TextArea2, 190);
+    lv_obj_set_x(ui_TextArea2, -100);
+    lv_obj_set_y(ui_TextArea2, 90);
     lv_obj_set_align(ui_TextArea2, LV_ALIGN_CENTER);
     lv_textarea_set_placeholder_text(ui_TextArea2, "Placeholder...");
-
-
 
     ui_Label10 = lv_label_create(ui_LoadScreen);
     lv_obj_set_width(ui_Label10, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label10, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Label10, -312);
+    lv_obj_set_x(ui_Label10, -310);
     lv_obj_set_y(ui_Label10, -140);
     lv_obj_set_align(ui_Label10, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label10, "ID");
@@ -57,16 +55,17 @@ void ui_LoadScreen_screen_init(void)
     lv_obj_set_width(ui_Label11, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label11, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_Label11, -310);
-    lv_obj_set_y(ui_Label11, -98);
+    lv_obj_set_y(ui_Label11, -80);
     lv_obj_set_align(ui_Label11, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label11, "Time");
+    lv_label_set_text(ui_Label11, "Intervall");
 
     ui_Button7 = lv_btn_create(ui_LoadScreen);
-    lv_obj_set_width(ui_Button7, 59);
-    lv_obj_set_height(ui_Button7, 34);
-    lv_obj_set_x(ui_Button7, 145);
-    lv_obj_set_y(ui_Button7, -137);
+    lv_obj_set_width(ui_Button7, 70);
+    lv_obj_set_height(ui_Button7, 45);
+    lv_obj_set_x(ui_Button7, 140);
+    lv_obj_set_y(ui_Button7, -140);
     lv_obj_set_align(ui_Button7, LV_ALIGN_CENTER);
+    lv_obj_add_event_cb(ui_Button7, ui_event_Button7, LV_EVENT_CLICKED, NULL);
 
     ui_Label12 = lv_label_create(ui_Button7);
     lv_obj_set_width(ui_Label12, LV_SIZE_CONTENT);   /// 1
@@ -77,11 +76,12 @@ void ui_LoadScreen_screen_init(void)
     lv_label_set_text(ui_Label12, "UP");
 
     ui_Button9 = lv_btn_create(ui_LoadScreen);
-    lv_obj_set_width(ui_Button9, 60);
-    lv_obj_set_height(ui_Button9, 35);
-    lv_obj_set_x(ui_Button9, 229);
-    lv_obj_set_y(ui_Button9, -139);
+    lv_obj_set_width(ui_Button9, 70);
+    lv_obj_set_height(ui_Button9, 45);
+    lv_obj_set_x(ui_Button9, 230);
+    lv_obj_set_y(ui_Button9, -140);
     lv_obj_set_align(ui_Button9, LV_ALIGN_CENTER);
+    lv_obj_add_event_cb(ui_Button9, ui_event_Button9, LV_EVENT_CLICKED, NULL);
 
     ui_Label14 = lv_label_create(ui_Button9);
     lv_obj_set_width(ui_Label14, LV_SIZE_CONTENT);   /// 1
@@ -92,11 +92,12 @@ void ui_LoadScreen_screen_init(void)
     lv_label_set_text(ui_Label14, "DOWN");
 
     ui_Button8 = lv_btn_create(ui_LoadScreen);
-    lv_obj_set_width(ui_Button8, 56);
-    lv_obj_set_height(ui_Button8, 33);
-    lv_obj_set_x(ui_Button8, 145);
-    lv_obj_set_y(ui_Button8, -76);
+    lv_obj_set_width(ui_Button8, 70);
+    lv_obj_set_height(ui_Button8, 45);
+    lv_obj_set_x(ui_Button8, 140);
+    lv_obj_set_y(ui_Button8, -80);
     lv_obj_set_align(ui_Button8, LV_ALIGN_CENTER);
+    lv_obj_add_event_cb(ui_Button8, ui_event_Button8, LV_EVENT_CLICKED, NULL);
 
     ui_Label13 = lv_label_create(ui_Button8);
     lv_obj_set_width(ui_Label13, LV_SIZE_CONTENT);   /// 1
@@ -107,20 +108,57 @@ void ui_LoadScreen_screen_init(void)
     lv_label_set_text(ui_Label13, "UP");
 
     ui_Button10 = lv_btn_create(ui_LoadScreen);
-    lv_obj_set_width(ui_Button10, 62);
-    lv_obj_set_height(ui_Button10, 33);
-    lv_obj_set_x(ui_Button10, 228);
-    lv_obj_set_y(ui_Button10, -76);
+    lv_obj_set_width(ui_Button10, 70);
+    lv_obj_set_height(ui_Button10, 45);
+    lv_obj_set_x(ui_Button10, 230);
+    lv_obj_set_y(ui_Button10, -80);
     lv_obj_set_align(ui_Button10, LV_ALIGN_CENTER);
+    lv_obj_add_event_cb(ui_Button10, ui_event_Button10, LV_EVENT_CLICKED, NULL);
 
     ui_Label15 = lv_label_create(ui_Button10);
     lv_obj_set_width(ui_Label15, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label15, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_Label15, 0);
-    lv_obj_set_y(ui_Label15, 2);
+    lv_obj_set_y(ui_Label15, 1);
     lv_obj_set_align(ui_Label15, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label15, "DOWN");
 
+    ui_Button11 = lv_btn_create(ui_LoadScreen);
+    lv_obj_set_width(ui_Button11, 140);
+    lv_obj_set_height(ui_Button11, 90);
+    lv_obj_set_x(ui_Button11, 260);
+    lv_obj_set_y(ui_Button11, 40);
+    lv_obj_set_align(ui_Button11, LV_ALIGN_CENTER);
+    lv_obj_add_event_cb(ui_Button11, ui_event_Button11, LV_EVENT_CLICKED, NULL);
+
+    ui_Label16 = lv_label_create(ui_Button11);
+    lv_obj_set_width(ui_Label16, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label16, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Label16, 0);
+    lv_obj_set_y(ui_Label16, 1);
+    lv_obj_set_align(ui_Label16, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label16, "Send");
+
+    /*
+    ui_Label17 = lv_obj_create(ui_LoadScreen);
+    lv_obj_set_width(ui_Label17, 260);
+    lv_obj_set_height(ui_Label17, 40);
+    lv_obj_set_x(ui_Label17, -110);
+    lv_obj_set_y(ui_Label17, -140);
+    lv_obj_set_align(ui_Label17, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label17, "0x001");
+
+    ui_Label18 = lv_obj_create(ui_LoadScreen);
+    lv_obj_set_width(ui_Label18, 260);
+    lv_obj_set_height(ui_Label18, 40);
+    lv_obj_set_x(ui_Label18, -110);
+    lv_obj_set_y(ui_Label18, -80);
+    lv_obj_set_align(ui_Label18, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label18, "1000 ms");
+    */
+   /*
+   
+   */
     ui_Panel3 = lv_obj_create(ui_LoadScreen);
     lv_obj_set_width(ui_Panel3, 251);
     lv_obj_set_height(ui_Panel3, 34);
@@ -136,6 +174,7 @@ void ui_LoadScreen_screen_init(void)
     lv_obj_set_y(ui_Panel4, -76);
     lv_obj_set_align(ui_Panel4, LV_ALIGN_CENTER);
     lv_obj_clear_flag(ui_Panel4, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
 
     lv_obj_add_event_cb(ui_Button4, ui_event_Button4, LV_EVENT_ALL, NULL);
 

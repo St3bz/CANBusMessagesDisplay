@@ -74,18 +74,31 @@ extern lv_obj_t * ui_Label7;
 extern lv_obj_t * ui_TextArea2;
 extern lv_obj_t * ui_Label10;
 extern lv_obj_t * ui_Label11;
+void ui_event_Button7(lv_event_t * e);
 extern lv_obj_t * ui_Button7;
 extern lv_obj_t * ui_Label12;
+void ui_event_Button9(lv_event_t * e);
 extern lv_obj_t * ui_Button9;
 extern lv_obj_t * ui_Label14;
+void ui_event_Button8(lv_event_t * e);
 extern lv_obj_t * ui_Button8;
 extern lv_obj_t * ui_Label13;
+void ui_event_Button10(lv_event_t * e);
 extern lv_obj_t * ui_Button10;
 extern lv_obj_t * ui_Label15;
+void ui_event_Button11(lv_event_t * e);
+extern lv_obj_t * ui_Button11;
+extern lv_obj_t * ui_Label16;
+//extern lv_obj_t * ui_Label17;
+//extern lv_obj_t * ui_Label18;
 extern lv_obj_t * ui_Panel3;
 extern lv_obj_t * ui_Panel4;
 // CUSTOM VARIABLES
-
+void id_up_handler();
+void id_down_handler();
+void interval_up_handler();
+void interval_down_handler();
+void send_start_handler();
 // EVENTS
 
 extern lv_obj_t * ui____initial_actions0;

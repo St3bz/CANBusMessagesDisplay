@@ -58,14 +58,23 @@ lv_obj_t * ui_Label7;
 lv_obj_t * ui_TextArea2;
 lv_obj_t * ui_Label10;
 lv_obj_t * ui_Label11;
+void ui_event_Button7(lv_event_t * e);
 lv_obj_t * ui_Button7;
 lv_obj_t * ui_Label12;
+void ui_event_Button9(lv_event_t * e);
 lv_obj_t * ui_Button9;
 lv_obj_t * ui_Label14;
+void ui_event_Button8(lv_event_t * e);
 lv_obj_t * ui_Button8;
 lv_obj_t * ui_Label13;
+void ui_event_Button10(lv_event_t * e);
 lv_obj_t * ui_Button10;
 lv_obj_t * ui_Label15;
+void ui_event_Button11(lv_event_t * e);
+lv_obj_t * ui_Button11;
+lv_obj_t * ui_Label16;
+//lv_obj_t * ui_Label17;
+//lv_obj_t * ui_Label18;
 lv_obj_t * ui_Panel3;
 lv_obj_t * ui_Panel4;
 // CUSTOM VARIABLES
@@ -159,6 +168,46 @@ void ui_event_Button4(lv_event_t * e)
     }
 }
 
+void ui_event_Button7(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        //id_up_handler();
+    }
+}
+void ui_event_Button9(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        //id_down_handler();
+    }
+}
+void ui_event_Button8(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+       //interval_up_handler();
+    }
+}
+void ui_event_Button10(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+       //interval_down_handler();
+    }
+}
+void ui_event_Button11(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        //send_start_handler();
+    }
+}
 ///////////////////// SCREENS ////////////////////
 
 void ui_init(void)

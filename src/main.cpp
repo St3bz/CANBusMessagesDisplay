@@ -160,6 +160,10 @@ CanMessageStat messageStats[MAX_STATS];
 char message_log[MAX_CAN_MESSAGES][MESSAGE_BUFFER_SIZE];
 size_t current_message_index = 0;
 
+bool sending = false;
+uint32_t can_message_id = 0x001;
+uint32_t send_interval_ms = 1000;
+
 // Funktion zum Empfangen der CAN-Nachrichten
 void receive_can_message() {
     twai_message_t message;
@@ -314,7 +318,67 @@ void update_diagram(void) {
     lv_chart_refresh(ui_Chart1);
 
 }
+/*
+// Logik für ID-Buttons
+void id_up_handler() {
+    if (can_message_id < 0x7FF) {
+        can_message_id++;
+        Serial.printf("CAN Message ID: 0x%X\n", can_message_id);
+        if (ui_Label17 != NULL) {
+            char buffer[16];
+            snprintf(buffer, sizeof(buffer), "   0x%X", can_message_id);
+            lv_label_set_text(ui_Label17, buffer);
+        }
+    }
+}
 
+void id_down_handler() {
+    if (can_message_id > 0x000) {
+        can_message_id--;
+        Serial.printf("CAN Message ID: 0x%X\n", can_message_id);
+        if (ui_Label17 != NULL) {
+            char buffer[16];
+            snprintf(buffer, sizeof(buffer), "   0x%X", can_message_id);
+            lv_label_set_text(ui_Label17, buffer);
+        }
+    }
+}
+
+// Logik für Intervall-Buttons
+void interval_up_handler() {
+    if(send_interval_ms < 50000) {
+        send_interval_ms += 100;
+        Serial.printf("Send Interval: %d ms\n", send_interval_ms);
+        if (ui_Label18 != NULL) {
+            char buffer[20];
+            snprintf(buffer, sizeof(buffer), "   %d ms", send_interval_ms);
+            lv_label_set_text(ui_Label18, buffer);
+        }
+    }
+}
+
+void interval_down_handler() {
+    if (send_interval_ms > 100) {
+        send_interval_ms -= 100;
+        Serial.printf("Send Interval: %d ms\n", send_interval_ms);
+        if (ui_Label18 != NULL) {
+        char buffer[20];
+        snprintf(buffer, sizeof(buffer), "   %d ms", send_interval_ms);
+        lv_label_set_text(ui_Label18, buffer);
+        }
+    }
+}
+
+// Logik für Start/Stop-Button
+void send_start_handler() {
+    sending = !sending;
+    if (sending) {
+        Serial.println("Sending started.");
+    } else {
+        Serial.println("Sending stopped.");
+    }
+}
+*/
 
 // Funktion zur Aktualisierung des Balkendiagramms
 void update_chart_with_statistics() {
