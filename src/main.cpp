@@ -32,7 +32,8 @@
 #include <ESP_Panel_Library.h>
 #include <ESP_IOExpander_Library.h>
 #include <ui.h>
-#include <driver/twai.h>
+#include <ESP32-TWAI-CAN.hpp>
+
 #include "esp_task_wdt.h"
 
 // Extend IO Pin define
@@ -46,6 +47,10 @@
 #define I2C_MASTER_NUM 0
 #define I2C_MASTER_SDA_IO 8
 #define I2C_MASTER_SCL_IO 9
+
+//CAN Pin define
+#define CAN_TX 20
+#define CAN_RX 19
 
 /**
 /* To use the built-in examples and demos of LVGL uncomment the includes below respectively.
@@ -165,17 +170,33 @@ uint32_t can_message_id = 0x001;
 uint32_t send_interval_ms = 1000;
 lv_timer_t *send_timer = NULL;
 
+void twai_init() {
+    // Konfiguriere die CAN-Pins
+    ESP32Can.setPins(CAN_TX, CAN_RX);
+    ESP32Can.setRxQueueSize(5);
+	ESP32Can.setTxQueueSize(5);
+    ESP32Can.setSpeed(ESP32Can.convertSpeed(500));
+    if (ESP32Can.begin()) { // 500 kbps, mit definierten Pins
+        Serial.println("Failed to initialize CAN-Bus");
+    } else {
+        Serial.println("CAN-Bus initialized successfully");
+    }
+}
+
+
+
 // Funktion zum Empfangen der CAN-Nachrichten
 void receive_can_message() {
-    twai_message_t message;
+    
+    CanFrame frame;
     char message_buffer[MESSAGE_BUFFER_SIZE];
 
     // Empfang der CAN-Nachrichten
-    if (twai_receive(&message, pdMS_TO_TICKS(1000)) == ESP_OK) {
+    if (ESP32Can.readFrame(&frame)) {
         // Formatiere die CAN-Nachricht
-        sprintf(message_buffer, "ID: 0x%X Data: ", message.identifier);
-        for (int i = 0; i < message.data_length_code; i++) {
-            sprintf(message_buffer + strlen(message_buffer), "0x%.2X ", message.data[i]);
+        sprintf(message_buffer, "ID: 0x%X Data: ", frame.identifier);
+        for (int i = 0; i < frame.data_length_code; i++) {
+            sprintf(message_buffer + strlen(message_buffer), "0x%.2X ", frame.data[i]);
         }
         strcat(message_buffer, "\n");
 
@@ -189,7 +210,7 @@ void receive_can_message() {
         // Statistik aktualisieren
         bool found = false;
         for (int i = 0; i < MAX_STATS; i++) {
-            if (messageStats[i].id == message.identifier) {
+            if (messageStats[i].id == frame.identifier) {
                 messageStats[i].count++;
                 found = true;
                 break;
@@ -199,7 +220,7 @@ void receive_can_message() {
             // Neue Nachricht hinzufügen
             for (int i = 0; i < MAX_STATS; i++) {
                 if (messageStats[i].count == 0) {
-                    messageStats[i].id = message.identifier;
+                    messageStats[i].id = frame.identifier;
                     messageStats[i].count = 1;
                     break;
                 }
@@ -229,7 +250,7 @@ void receive_can_message() {
 void update_can_log_task() {
     lv_timer_create([](lv_timer_t *timer) {
         receive_can_message();  // Nachrichten empfangen und UI aktualisieren
-    }, 5000, NULL);  // Aktualisierung alle 5 Sekunden
+    }, 1000, NULL);  // Aktualisierung alle 5 Sekunden
 }
 
 void find_top_10_messages(CanMessageStat top_10[10]) {
@@ -362,13 +383,14 @@ void interval_down_handler() {
 
 // Logik für Start/Stop-Button
 void send_configured_can_message() {
-    twai_message_t message;
-    message.identifier = can_message_id; // Eingestellte ID
-    message.data_length_code = 8;       // Standardlänge
-    memset(message.data, 0, sizeof(message.data)); // Fülle Daten mit 0
+    
+    CanFrame frame;
+    frame.identifier = can_message_id; // Eingestellte ID
+    frame.data_length_code = 8;       // Standardlänge
+    memset(frame.data, 0, 8); // Fülle Daten mit 0
 
-    if (twai_transmit(&message, pdMS_TO_TICKS(1000)) == ESP_OK) {
-        Serial.printf("Sent CAN Message: ID 0x%X\n", message.identifier);
+    if (ESP32Can.writeFrame(frame)) {
+        Serial.printf("Sent CAN Message: ID 0x%X\n", frame.identifier);
     } else {
         Serial.println("Failed to send CAN message.");
     }
@@ -527,6 +549,9 @@ void setup()
     /* Start panel */
     panel->begin();
 
+    /* Initialize CAN */
+    twai_init();
+
     /* Create a task to run the LVGL task periodically */
     lvgl_mux = xSemaphoreCreateRecursiveMutex();
     xTaskCreate(lvgl_port_task, "lvgl", LVGL_TASK_STACK_SIZE, NULL, LVGL_TASK_PRIORITY, NULL);
@@ -543,7 +568,7 @@ void setup()
     lvgl_port_lock(-1);
 
     /* Start Simulation CAN-Bus Nachrichtenempfang */
-    start_can_simulation_task();
+    //start_can_simulation_task();
     
     /* Start CAN-Bus Nachrichtenempfang */
     update_can_log_task();
